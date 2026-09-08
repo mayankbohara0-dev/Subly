@@ -195,6 +195,7 @@ export const AppNavigator: React.FC<AppNavigatorProps> = ({
   // Modals for Trials + History tabs
   const [showAddFromTrials, setShowAddFromTrials] = useState(false);
   const [selectedTrial, setSelectedTrial] = useState<Trial | null>(null);
+  const [selectedHistory, setSelectedHistory] = useState<Trial | null>(null);
   const [editingFromHistory, setEditingFromHistory] = useState<Trial | null>(null);
 
   const handleAddTrial = useCallback(
@@ -343,15 +344,13 @@ export const AppNavigator: React.FC<AppNavigatorProps> = ({
             ),
           }}
         >
-          {() => {
-            const [selectedHistory, setSelectedHistory] = useState<Trial | null>(null);
-            return (
-              <>
-                <HistoryScreen
-                  trials={trials}
-                  loading={loading}
-                  onViewTrial={(t) => setSelectedHistory(t)}
-                />
+          {() => (
+            <>
+              <HistoryScreen
+                trials={trials}
+                loading={loading}
+                onViewTrial={(t) => setSelectedHistory(t)}
+              />
                 <Modal
                   visible={!!selectedHistory}
                   animationType="slide"
@@ -376,8 +375,7 @@ export const AppNavigator: React.FC<AppNavigatorProps> = ({
                   )}
                 </Modal>
               </>
-            );
-          }}
+            )}
         </Tab.Screen>
 
         <Tab.Screen

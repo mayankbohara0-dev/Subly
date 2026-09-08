@@ -8,6 +8,7 @@ import {
   FlatList,
   TouchableOpacity,
   StatusBar,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -225,6 +226,10 @@ export const TrialsScreen: React.FC<TrialsScreenProps> = ({
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.list}
         showsVerticalScrollIndicator={false}
+        initialNumToRender={8}
+        maxToRenderPerBatch={8}
+        windowSize={5}
+        removeClippedSubviews={Platform.OS === 'android'}
         renderItem={({ item }) => (
           <TrialCard trial={item} onPress={() => onViewTrial(item)} />
         )}

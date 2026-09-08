@@ -52,9 +52,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   const [selectedFilter, setSelectedFilter] = useState<FilterChip>('all');
 
   const greeting = getGreeting();
-  const activeTrials = getActiveTrials(trials);
-  const expiringSoon = getExpiringSoon(trials, 7);
-  const atRiskTrials = getMoneyAtRiskTrials(trials);
+  const activeTrials = useMemo(() => getActiveTrials(trials), [trials]);
+  const expiringSoon = useMemo(() => getExpiringSoon(trials, 7), [trials]);
+  const atRiskTrials = useMemo(() => getMoneyAtRiskTrials(trials), [trials]);
 
   const urgentTrials = useMemo(() => {
     return activeTrials.filter((t) => {

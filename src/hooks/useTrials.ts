@@ -15,7 +15,7 @@ import {
   scheduleTrialReminders,
   cancelTrialNotifications,
 } from '../services/notificationService';
-import { getDaysRemaining } from '../utils/dateUtils';
+import { getDaysRemaining, computeTrialStatus } from '../utils/dateUtils';
 
 interface UseTrialsState {
   trials: Trial[];
@@ -50,11 +50,17 @@ export function useTrials(userId: string | null): UseTrialsState & UseTrialsActi
     else setLoading(true);
 
     try {
-      // Refresh statuses first (handles expired trials)
-      await refreshTrialStatuses(userId);
+      // Direct 1-roundtrip fetch for instant UI load
       const data = await fetchTrials();
-      setTrials(data);
+      const freshData = data.map((t) => {
+        const currentStatus = computeTrialStatus(t.trial_end_date, t.cancelled_at);
+        return currentStatus !== t.status ? { ...t, status: currentStatus } : t;
+      });
+      setTrials(freshData);
       setError(null);
+
+      // Background DB sync without blocking UI responsiveness
+      refreshTrialStatuses(userId).catch(() => {});
     } catch (e: any) {
       setError(e.message ?? 'Unable to load trials. Please try again.');
     } finally {
