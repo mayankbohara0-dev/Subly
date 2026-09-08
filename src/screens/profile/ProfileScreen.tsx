@@ -44,8 +44,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
   const [signingOut, setSigningOut] = useState(false);
   const [deletingAccount, setDeletingAccount] = useState(false);
 
-  const avatarLetter = (profile?.name ?? profile?.phone ?? profile?.email ?? 'S')[0].toUpperCase();
-  const displayIdentifier = profile?.phone || profile?.email || 'Verified User';
+  const avatarLetter = (profile?.name ?? profile?.email ?? 'S')[0].toUpperCase();
 
   const handleSignOut = () => {
     Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
@@ -107,7 +106,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
             </View>
           </View>
           <Text style={styles.name}>{profile?.name || 'Subly User'}</Text>
-          <Text style={styles.email}>{displayIdentifier}</Text>
+          <Text style={styles.email}>{profile?.email}</Text>
         </View>
 
         {/* Account Section */}
@@ -118,22 +117,12 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
             label="Name"
             value={profile?.name ?? '—'}
           />
-          {profile?.phone ? (
-            <SettingsRow
-              icon="call-outline"
-              label="Phone Number"
-              value={profile.phone}
-              last={!profile.email}
-            />
-          ) : null}
-          {profile?.email ? (
-            <SettingsRow
-              icon="mail-outline"
-              label="Email"
-              value={profile.email}
-              last
-            />
-          ) : null}
+          <SettingsRow
+            icon="mail-outline"
+            label="Email"
+            value={profile?.email ?? '—'}
+            last
+          />
         </View>
 
         {/* Notifications Section */}

@@ -39,8 +39,7 @@ export interface TrialFormData {
 export interface Profile {
   id: string;
   name: string;
-  email?: string;
-  phone?: string;
+  email: string;
   avatar_url?: string | null;
   created_at: string;
   updated_at: string;
@@ -81,9 +80,7 @@ export type AnalyticsEvent =
   | 'cancellation_link_opened'
   | 'trial_marked_cancelled'
   | 'notification_opened'
-  | 'account_deleted'
-  | 'sms_otp_requested'
-  | 'sms_otp_verified';
+  | 'account_deleted';
 
 export interface AnalyticsPayload {
   event: AnalyticsEvent;
