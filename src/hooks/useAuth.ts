@@ -14,6 +14,9 @@ interface AuthState {
 }
 
 interface AuthActions {
+  sendSmsOtp: (phone: string) => Promise<void>;
+  verifySmsOtp: (phone: string, token: string) => Promise<void>;
+  resendSmsOtp: (phone: string) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (name: string, email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
@@ -76,6 +79,52 @@ export function useAuth(): AuthState & AuthActions {
 
     return () => subscription.unsubscribe();
   }, [fetchProfile]);
+
+  const sendSmsOtp = useCallback(async (phone: string) => {
+    setError(null);
+    setLoading(true);
+    try {
+      const clean = phone.trim().replace(/[\s-]/g, '');
+      const formattedPhone = clean.startsWith('+') ? clean : `+${clean}`;
+      const { error: otpError } = await supabase.auth.signInWithOtp({
+        phone: formattedPhone,
+      });
+      if (otpError) throw otpError;
+      analytics.track('sms_otp_requested', { phone: formattedPhone });
+    } catch (e: any) {
+      const msg = e.message ?? 'Failed to send SMS code. Please verify your phone number.';
+      setError(msg);
+      throw e;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const verifySmsOtp = useCallback(async (phone: string, token: string) => {
+    setError(null);
+    setLoading(true);
+    try {
+      const clean = phone.trim().replace(/[\s-]/g, '');
+      const formattedPhone = clean.startsWith('+') ? clean : `+${clean}`;
+      const { data, error: verifyError } = await supabase.auth.verifyOtp({
+        phone: formattedPhone,
+        token: token.trim(),
+        type: 'sms',
+      });
+      if (verifyError) throw verifyError;
+      analytics.track('sms_otp_verified');
+    } catch (e: any) {
+      const msg = e.message ?? 'Invalid or expired verification code. Please try again.';
+      setError(msg);
+      throw e;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const resendSmsOtp = useCallback(async (phone: string) => {
+    return sendSmsOtp(phone);
+  }, [sendSmsOtp]);
 
   const signIn = useCallback(async (email: string, password: string) => {
     setError(null);
@@ -176,6 +225,9 @@ export function useAuth(): AuthState & AuthActions {
     profile,
     loading,
     error,
+    sendSmsOtp,
+    verifySmsOtp,
+    resendSmsOtp,
     signIn,
     signUp,
     signOut,
