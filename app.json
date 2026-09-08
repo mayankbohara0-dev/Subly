@@ -43,6 +43,12 @@
           "fonts": []
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "ce26c4c9-408c-4588-8f03-5db7d7c465c7"
+      }
+    },
+    "owner": "mayank007o"
   }
 }
