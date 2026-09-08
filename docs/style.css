@@ -30,6 +30,7 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
   font-family: var(--font-body);
   background-color: var(--bg-dark);
   color: var(--text-main);
@@ -896,7 +897,133 @@ body {
   color: var(--text-dim);
 }
 
-/* ── Responsive Queries ────────────────────────────────── */
+/* ── Responsive Helpers ────────────────────────────────── */
+.mobile-only {
+  display: none;
+}
+
+.desktop-only {
+  display: block;
+}
+
+/* ── Mobile Sticky Download Bar ────────────────────────── */
+.mobile-sticky-bar {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  background: rgba(10, 14, 24, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(255, 107, 0, 0.35);
+  padding: 12px 20px;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 -8px 25px rgba(0, 0, 0, 0.7);
+  transform: translateY(110%);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mobile-sticky-bar.visible {
+  transform: translateY(0);
+}
+
+.sticky-app-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sticky-app-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px var(--primary-glow);
+}
+
+.sticky-app-name {
+  font-family: var(--font-heading);
+  font-size: 15px;
+  font-weight: 800;
+  color: #FFF;
+  line-height: 1.2;
+}
+
+.sticky-app-sub {
+  font-size: 11px;
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.btn-sticky-download {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--primary);
+  color: #FFF;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 9px 16px;
+  border-radius: 10px;
+  box-shadow: 0 4px 14px var(--primary-glow);
+}
+
+.btn-sticky-download:active {
+  transform: scale(0.96);
+}
+
+/* ── Mobile Install Guide Cards ────────────────────────── */
+.mobile-install-guide {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.install-step {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 12px 16px;
+  text-align: left;
+}
+
+.step-num {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #FFF;
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px var(--primary-glow);
+}
+
+.step-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #FFF;
+}
+
+.step-desc {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 1px;
+  line-height: 1.4;
+}
+
+/* ── Responsive Breakpoints ────────────────────────────── */
 @media (max-width: 992px) {
   .hero-container {
     grid-template-columns: 1fr;
@@ -915,6 +1042,7 @@ body {
   .download-card {
     grid-template-columns: 1fr;
     padding: 40px 24px;
+    gap: 40px;
   }
 
   .hero-title {
@@ -922,36 +1050,310 @@ body {
   }
 }
 
-@media (max-width: 640px) {
-  .hero-title {
-    font-size: 34px;
+@media (max-width: 768px) {
+  .desktop-only {
+    display: none !important;
   }
 
+  .mobile-only {
+    display: flex !important;
+  }
+
+  body {
+    padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .mobile-sticky-bar {
+    display: flex;
+    padding: 10px 18px calc(10px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* Section Spacing on Mobile */
+  .hero {
+    padding: 36px 16px 54px;
+  }
+
+  .section {
+    padding: 56px 16px;
+  }
+
+  .section-header {
+    margin-bottom: 32px;
+  }
+
+  .section-title {
+    font-size: 28px;
+    letter-spacing: -0.5px;
+  }
+
+  .section-subtitle {
+    font-size: 14px;
+  }
+
+  /* Mobile Navbar */
+  .nav-container {
+    padding: 12px 16px;
+  }
+
+  .nav-links a:not(.nav-btn) {
+    display: none;
+  }
+
+  .nav-btn {
+    padding: 8px 14px;
+    font-size: 12px;
+    gap: 6px;
+  }
+
+  /* Hero Actions on Mobile */
   .hero-actions {
     flex-direction: column;
+    width: 100%;
+    max-width: 380px;
+    margin: 0 auto 32px;
+    gap: 12px;
   }
 
-  .btn {
+  .hero-actions .btn {
     width: 100%;
     justify-content: center;
   }
 
+  /* Mascot on Mobile */
+  .hero-mascot-container {
+    margin-top: 10px;
+  }
+
   .mascot-card {
     width: 280px;
-    height: 300px;
+    height: 290px;
   }
 
   .mascot-img {
-    width: 260px;
-    height: 260px;
+    width: 240px;
+    height: 240px;
+  }
+
+  .mascot-halo {
+    width: 220px;
+    height: 220px;
   }
 
   .mascot-floating-badge {
-    display: none;
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+
+  .badge-top-left {
+    left: -8px;
+    top: 8px;
+  }
+
+  .badge-bottom-right {
+    right: -8px;
+    bottom: 8px;
+  }
+
+  .speech-bubble {
+    font-size: 13px;
+    padding: 8px 16px;
+  }
+
+  /* Phone Simulator on Mobile */
+  .phone-frame {
+    width: 100%;
+    max-width: min(330px, 92vw);
+    border-radius: 30px;
+    padding: 14px 10px;
+  }
+
+  .sim-screen {
+    border-radius: 22px;
+    padding: 14px 12px;
+  }
+
+  .trial-item {
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .trial-icon {
+    width: 34px;
+    height: 34px;
+    font-size: 15px;
+    border-radius: 8px;
+  }
+
+  .trial-name {
+    font-size: 13px;
+  }
+
+  .trial-price {
+    font-size: 12px;
+  }
+
+  .btn-sim-cancel {
+    padding: 4px 8px;
+    font-size: 10px;
+  }
+
+  /* Features Grid on Mobile */
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .feature-card {
+    padding: 22px 18px;
+    border-radius: 20px;
+  }
+
+  .feature-title {
+    font-size: 18px;
+  }
+
+  .feature-desc {
+    font-size: 13px;
+  }
+
+  /* Download Card on Mobile */
+  .download-card {
+    padding: 28px 18px;
+    border-radius: 22px;
+    gap: 28px;
+  }
+
+  .download-title {
+    font-size: 26px;
+  }
+
+  .download-desc {
+    font-size: 14px;
+    margin-bottom: 20px;
   }
 
   .download-meta-list {
     flex-direction: column;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .download-btn-row {
+    flex-direction: column;
+    width: 100%;
     gap: 12px;
   }
+
+  .download-btn-row .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Footer on Mobile */
+  .footer {
+    padding: 40px 18px 90px;
+  }
+
+  .footer-container {
+    flex-direction: column;
+    text-align: center;
+    gap: 24px;
+  }
+
+  .footer-brand .brand {
+    justify-content: center;
+  }
+
+  .footer-links {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+  }
 }
+
+@media (max-width: 480px) {
+  .hero-title {
+    font-size: 30px;
+    letter-spacing: -0.6px;
+    line-height: 1.18;
+  }
+
+  .hero-subtitle {
+    font-size: 14px;
+    line-height: 1.55;
+    margin-bottom: 24px;
+  }
+
+  .badge-pill {
+    padding: 6px 12px;
+    font-size: 11px;
+    max-width: 100%;
+    text-align: center;
+  }
+
+  .badge-text {
+    line-height: 1.3;
+  }
+
+  .mascot-card {
+    width: 250px;
+    height: 260px;
+  }
+
+  .mascot-img {
+    width: 210px;
+    height: 210px;
+  }
+
+  .mascot-halo {
+    width: 190px;
+    height: 190px;
+  }
+
+  .badge-top-left {
+    left: -4px;
+    top: 4px;
+    font-size: 10px;
+    padding: 5px 10px;
+  }
+
+  .badge-bottom-right {
+    right: -4px;
+    bottom: 4px;
+    font-size: 10px;
+    padding: 5px 10px;
+  }
+
+  .phone-frame {
+    max-width: 100%;
+    border-radius: 26px;
+    padding: 12px 8px;
+  }
+
+  .btn-maintext {
+    font-size: 14px;
+  }
+
+  .btn-subtext {
+    font-size: 10px;
+  }
+
+  .btn-lg {
+    padding: 14px 20px;
+  }
+
+  .trust-row {
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .download-card {
+    padding: 24px 14px;
+  }
+
+  .download-title {
+    font-size: 23px;
+  }
+}
+

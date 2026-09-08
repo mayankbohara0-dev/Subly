@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initMascotClickEffect();
   renderQrCode();
   initSavingsCounter();
+  initMobileStickyBar();
 });
 
 // ── 1. Mascot 3D Parallax Tilt ──────────────────────────
@@ -43,6 +44,31 @@ function initMascotParallax() {
       img.style.transform = `translate(${deltaX * 0.05}px, ${deltaY * 0.05}px) scale(1.03)`;
     }
   });
+
+  // Mobile Touch Support for Parallax
+  card.addEventListener('touchmove', (e) => {
+    if (!e.touches[0]) return;
+    const touch = e.touches[0];
+    const rect = card.getBoundingClientRect();
+    const cardCenterX = rect.left + rect.width / 2;
+    const cardCenterY = rect.top + rect.height / 2;
+
+    const deltaX = touch.clientX - cardCenterX;
+    const deltaY = touch.clientY - cardCenterY;
+
+    const rotateX = -(deltaY / 14).toFixed(2);
+    const rotateY = (deltaX / 14).toFixed(2);
+
+    card.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.05, 1.05, 1.05)`;
+    img.style.transform = `translate(${deltaX * 0.05}px, ${deltaY * 0.05}px) scale(1.04)`;
+  }, { passive: true });
+
+  card.addEventListener('touchend', () => {
+    setTimeout(() => {
+      card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+      img.style.transform = 'translateY(0) scale(1)';
+    }, 350);
+  }, { passive: true });
 }
 
 // ── 2. Mascot Speech Bubble Quotes ──────────────────────
@@ -89,28 +115,36 @@ function initMascotQuotes() {
   }, 6500);
 }
 
-// ── 3. Mascot Click Particles & Animation ───────────────
+// ── 3. Mascot Click / Tap Particles & Animation ─────────
 function initMascotClickEffect() {
   const card = document.getElementById('mascotCard');
   if (!card) return;
 
   const particles = ['💰', '🛡️', '✨', '🚀', '🔥', '🎉'];
 
-  card.addEventListener('click', (e) => {
-    // Spawn 5 floating particles around click point
+  const triggerAnimation = (clientX, clientY) => {
     for (let i = 0; i < 5; i++) {
-      createParticle(e.clientX, e.clientY, particles[Math.floor(Math.random() * particles.length)]);
+      createParticle(clientX, clientY, particles[Math.floor(Math.random() * particles.length)]);
     }
 
-    // Mascot happy bounce
     const img = document.getElementById('mascotImg');
     if (img) {
-      img.style.transform = 'scale(1.12) rotate(4deg)';
+      img.style.transform = 'scale(1.14) rotate(4deg)';
       setTimeout(() => {
         img.style.transform = '';
       }, 250);
     }
+  };
+
+  card.addEventListener('click', (e) => {
+    triggerAnimation(e.clientX, e.clientY);
   });
+
+  card.addEventListener('touchstart', (e) => {
+    if (e.touches[0]) {
+      triggerAnimation(e.touches[0].clientX, e.touches[0].clientY);
+    }
+  }, { passive: true });
 }
 
 function createParticle(x, y, char) {
@@ -245,3 +279,22 @@ function initSavingsCounter() {
     el.textContent = `₹${baseSavings.toLocaleString()}+ Saved`;
   }, 4000);
 }
+
+// ── 7. Mobile Sticky Download Bar Controller ────────────
+function initMobileStickyBar() {
+  const bar = document.getElementById('mobileStickyBar');
+  if (!bar) return;
+
+  const updateBar = () => {
+    // Show bar when scrolled past 280px
+    if (window.scrollY > 280) {
+      bar.classList.add('visible');
+    } else {
+      bar.classList.remove('visible');
+    }
+  };
+
+  window.addEventListener('scroll', updateBar, { passive: true });
+  updateBar();
+}
+

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Subly — Never Get Charged for a Free Trial Again | Free Android APK</title>
   <meta name="description" content="Subly is a smart free trial and subscription tracker. Get timely renewal alerts and 1-tap cancellation links before you get charged. Download the free Android APK.">
   
@@ -317,13 +317,37 @@
         </div>
       </div>
 
-      <!-- QR Code Scan Box -->
+      <!-- QR Code Scan Box (Desktop) / Mobile Install Guide (Mobile) -->
       <div class="qr-container">
-        <div class="qr-box">
+        <div class="qr-box desktop-only">
           <canvas id="qrCanvas" width="160" height="160"></canvas>
           <div class="qr-scan-label">
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/></svg>
             <span>Scan with phone camera to download directly</span>
+          </div>
+        </div>
+
+        <div class="mobile-install-guide mobile-only">
+          <div class="install-step">
+            <span class="step-num">1</span>
+            <div>
+              <div class="step-title">Download APK</div>
+              <div class="step-desc">Tap the download button above to get Subly.apk</div>
+            </div>
+          </div>
+          <div class="install-step">
+            <span class="step-num">2</span>
+            <div>
+              <div class="step-title">Allow Unknown Apps</div>
+              <div class="step-desc">Tap "Settings" & toggle "Allow from this source"</div>
+            </div>
+          </div>
+          <div class="install-step">
+            <span class="step-num">3</span>
+            <div>
+              <div class="step-title">Install & Launch</div>
+              <div class="step-desc">Tap "Install" and never pay for a trial again!</div>
+            </div>
           </div>
         </div>
       </div>
@@ -354,6 +378,21 @@
       <p>© 2026 Subly. Created by Mayank Bohara. Free & Open Source.</p>
     </div>
   </footer>
+
+  <!-- Mobile Sticky Download Bar -->
+  <div class="mobile-sticky-bar" id="mobileStickyBar">
+    <div class="sticky-app-meta">
+      <img src="assets/icon.png" alt="Subly Icon" class="sticky-app-icon">
+      <div>
+        <div class="sticky-app-name">Subly</div>
+        <div class="sticky-app-sub">v1.0.0 • Free APK</div>
+      </div>
+    </div>
+    <a href="https://github.com/mayankbohara0-dev/Subly/releases/latest/download/Subly.apk" class="btn-sticky-download" download>
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      <span>Download</span>
+    </a>
+  </div>
 
   <script src="main.js"></script>
 </body>
