@@ -9,6 +9,7 @@ import {
   Alert,
   StatusBar,
   Switch,
+  Linking,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -25,17 +26,23 @@ interface ProfileScreenProps {
   prefs: NotificationPreferences;
   onUpdatePrefs: (updates: Partial<NotificationPreferences>) => Promise<void>;
   onSignOut: () => Promise<void>;
+  onDeleteAccount: () => Promise<void>;
   onNavigateNotifications: () => void;
 }
+
+const PRIVACY_URL = 'https://github.com/mayankbohara0-dev/Subly/blob/main/docs/PRIVACY_POLICY.md';
+const TERMS_URL = 'https://github.com/mayankbohara0-dev/Subly/blob/main/docs/TERMS.md';
 
 export const ProfileScreen: React.FC<ProfileScreenProps> = ({
   profile,
   prefs,
   onUpdatePrefs,
   onSignOut,
+  onDeleteAccount,
   onNavigateNotifications,
 }) => {
   const [signingOut, setSigningOut] = useState(false);
+  const [deletingAccount, setDeletingAccount] = useState(false);
 
   const avatarLetter = (profile?.name ?? profile?.email ?? 'S')[0].toUpperCase();
 
@@ -56,6 +63,29 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
         },
       },
     ]);
+  };
+
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      'Delete Account & Data',
+      'Are you sure you want to permanently delete your Subly account? All your subscriptions, reminders, and history will be permanently erased. This cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Permanently Delete',
+          style: 'destructive',
+          onPress: async () => {
+            setDeletingAccount(true);
+            try {
+              await onDeleteAccount();
+            } catch {
+              Alert.alert('Error', 'Failed to delete account. Please try again.');
+              setDeletingAccount(false);
+            }
+          },
+        },
+      ]
+    );
   };
 
   return (
@@ -150,30 +180,44 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
             icon="lock-closed-outline"
             label="Privacy Policy"
             chevron
+            onPress={() => Linking.openURL(PRIVACY_URL)}
           />
           <SettingsRow
             icon="document-text-outline"
             label="Terms of Service"
             chevron
+            onPress={() => Linking.openURL(TERMS_URL)}
           />
           <SettingsRow
             icon="help-buoy-outline"
-            label="Help & Feedback"
+            label="Help & Support"
             chevron
             last
+            onPress={() => Linking.openURL('mailto:support@subly.app')}
           />
         </View>
 
-        {/* Sign Out */}
-        <Button
-          title="Sign Out"
-          onPress={handleSignOut}
-          variant="danger"
-          fullWidth
-          size="lg"
-          loading={signingOut}
-          style={styles.signOutBtn}
-        />
+        {/* Account Actions */}
+        <View style={styles.actionButtons}>
+          <Button
+            title="Sign Out"
+            onPress={handleSignOut}
+            variant="outline"
+            fullWidth
+            size="lg"
+            loading={signingOut}
+            style={styles.signOutBtn}
+          />
+          <Button
+            title="Delete Account & Data"
+            onPress={handleDeleteAccount}
+            variant="danger"
+            fullWidth
+            size="md"
+            loading={deletingAccount}
+            style={styles.deleteBtn}
+          />
+        </View>
 
         <Text style={styles.footer}>
           Subly • Track every trial. Never pay by surprise.
@@ -337,8 +381,17 @@ const styles = StyleSheet.create({
     fontFamily: typography.fontFamily.medium,
     color: colors.textMuted,
   },
+  actionButtons: {
+    marginTop: spacing.xl,
+    gap: spacing.sm,
+  },
   signOutBtn: {
-    marginTop: spacing['2xl'],
+    marginBottom: 0,
+  },
+  deleteBtn: {
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: '#FCA5A5',
   },
   footer: {
     fontSize: 11,

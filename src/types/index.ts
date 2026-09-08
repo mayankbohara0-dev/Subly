@@ -79,7 +79,8 @@ export type AnalyticsEvent =
   | 'trial_viewed'
   | 'cancellation_link_opened'
   | 'trial_marked_cancelled'
-  | 'notification_opened';
+  | 'notification_opened'
+  | 'account_deleted';
 
 export interface AnalyticsPayload {
   event: AnalyticsEvent;

@@ -133,10 +133,11 @@ interface ProfileStackNavigatorProps {
   prefs: NotificationPreferences;
   onUpdatePrefs: (updates: Partial<NotificationPreferences>) => Promise<void>;
   onSignOut: () => Promise<void>;
+  onDeleteAccount: () => Promise<void>;
 }
 
 const ProfileStackNavigator: React.FC<ProfileStackNavigatorProps> = ({
-  profile, prefs, onUpdatePrefs, onSignOut,
+  profile, prefs, onUpdatePrefs, onSignOut, onDeleteAccount,
 }) => {
   return (
     <ProfileStack.Navigator screenOptions={{ headerShown: false }}>
@@ -147,6 +148,7 @@ const ProfileStackNavigator: React.FC<ProfileStackNavigatorProps> = ({
             prefs={prefs}
             onUpdatePrefs={onUpdatePrefs}
             onSignOut={onSignOut}
+            onDeleteAccount={onDeleteAccount}
             onNavigateNotifications={() => navigation.navigate('NotificationSettings')}
           />
         )}
@@ -169,12 +171,14 @@ interface AppNavigatorProps {
   userId: string;
   profile: Profile | null;
   onSignOut: () => Promise<void>;
+  onDeleteAccount: () => Promise<void>;
 }
 
 export const AppNavigator: React.FC<AppNavigatorProps> = ({
   userId,
   profile,
   onSignOut,
+  onDeleteAccount,
 }) => {
   const {
     trials,
@@ -397,6 +401,7 @@ export const AppNavigator: React.FC<AppNavigatorProps> = ({
               prefs={prefs}
               onUpdatePrefs={updatePrefs}
               onSignOut={onSignOut}
+              onDeleteAccount={onDeleteAccount}
             />
           )}
         </Tab.Screen>

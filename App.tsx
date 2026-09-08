@@ -33,7 +33,7 @@ type AppFlow = 'splash' | 'onboarding' | 'auth' | 'app';
 
 // ─── Inner component that uses auth hook ─────────────────
 const AppInner: React.FC = () => {
-  const { session, user, profile, loading, signOut } = useAuth();
+  const { session, user, profile, loading, signOut, deleteAccount } = useAuth();
   const [flow, setFlow] = useState<AppFlow>('splash');
   const [splashDone, setSplashDone] = useState(false);
 
@@ -121,6 +121,7 @@ const AppInner: React.FC = () => {
         userId={user.id}
         profile={profile}
         onSignOut={handleSignOut}
+        onDeleteAccount={deleteAccount}
       />
     </NavigationContainer>
   );

@@ -19,6 +19,7 @@ interface AuthActions {
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
+  deleteAccount: () => Promise<void>;
   refreshProfile: () => Promise<void>;
   clearError: () => void;
 }
@@ -145,6 +146,24 @@ export function useAuth(): AuthState & AuthActions {
     }
   }, []);
 
+  const deleteAccount = useCallback(async () => {
+    if (!user?.id) throw new Error('No authenticated user');
+    setLoading(true);
+    try {
+      // Clean up all user data
+      await supabase.from('trials').delete().eq('user_id', user.id);
+      await supabase.from('notification_preferences').delete().eq('user_id', user.id);
+      await supabase.from('profiles').delete().eq('id', user.id);
+      await supabase.auth.signOut();
+      analytics.track('account_deleted');
+    } catch (e: any) {
+      setError(e.message ?? 'Failed to delete account.');
+      throw e;
+    } finally {
+      setLoading(false);
+    }
+  }, [user]);
+
   const refreshProfile = useCallback(async () => {
     if (user?.id) await fetchProfile(user.id);
   }, [user, fetchProfile]);
@@ -162,6 +181,7 @@ export function useAuth(): AuthState & AuthActions {
     signOut,
     resetPassword,
     signInWithGoogle,
+    deleteAccount,
     refreshProfile,
     clearError,
   };

@@ -8,21 +8,41 @@
     "userInterfaceStyle": "light",
     "scheme": "subly",
     "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
       "backgroundColor": "#FFFFFF"
     },
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.subly.app"
+      "bundleIdentifier": "com.subly.app",
+      "buildNumber": "1",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "package": "com.subly.app",
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundColor": "#FF6B00"
-      }
+      },
+      "permissions": [
+        "RECEIVE_BOOT_COMPLETED",
+        "SCHEDULE_EXACT_ALARM",
+        "POST_NOTIFICATIONS"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-font",
+        {
+          "fonts": []
+        }
+      ]
+    ]
   }
 }
