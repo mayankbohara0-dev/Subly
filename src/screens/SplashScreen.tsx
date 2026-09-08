@@ -1,4 +1,4 @@
-// TrialGuard — Splash Screen
+// Subly — Splash Screen with Animated Mascot
 import React, { useEffect, useRef } from 'react';
 import {
   View,
@@ -10,28 +10,30 @@ import {
 import { colors } from '../constants/colors';
 import { typography } from '../constants/typography';
 import { spacing } from '../constants/spacing';
+import { AnimatedMascot } from '../components/ui/AnimatedMascot';
 
 interface SplashScreenProps {
   onFinish: () => void;
 }
 
 export const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
-  const logoScale = useRef(new Animated.Value(0.6)).current;
-  const logoOpacity = useRef(new Animated.Value(0)).current;
+  const mascotScale = useRef(new Animated.Value(0.5)).current;
+  const mascotOpacity = useRef(new Animated.Value(0)).current;
   const textOpacity = useRef(new Animated.Value(0)).current;
   const taglineOpacity = useRef(new Animated.Value(0)).current;
+  const badgeOpacity = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     Animated.sequence([
-      // Logo pop in
+      // Mascot spring in
       Animated.parallel([
-        Animated.spring(logoScale, {
+        Animated.spring(mascotScale, {
           toValue: 1,
-          tension: 80,
+          tension: 70,
           friction: 6,
           useNativeDriver: true,
         }),
-        Animated.timing(logoOpacity, {
+        Animated.timing(mascotOpacity, {
           toValue: 1,
           duration: 400,
           useNativeDriver: true,
@@ -41,49 +43,59 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
       Animated.timing(textOpacity, {
         toValue: 1,
         duration: 350,
-        delay: 100,
-        useNativeDriver: true,
-      }),
-      // Tagline fade in
-      Animated.timing(taglineOpacity, {
-        toValue: 1,
-        duration: 350,
         delay: 50,
         useNativeDriver: true,
       }),
+      // Tagline & badge
+      Animated.parallel([
+        Animated.timing(taglineOpacity, {
+          toValue: 1,
+          duration: 350,
+          useNativeDriver: true,
+        }),
+        Animated.timing(badgeOpacity, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+      ]),
     ]).start(() => {
-      // Navigate after 1.8s total
-      setTimeout(onFinish, 800);
+      // Complete splash after 1.8s
+      setTimeout(onFinish, 900);
     });
-  }, []);
+  }, [mascotScale, mascotOpacity, textOpacity, taglineOpacity, badgeOpacity, onFinish]);
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor={colors.white} />
+      <StatusBar barStyle="dark-content" backgroundColor={colors.white} />
 
-      {/* Logo */}
+      {/* Animated Mascot Hero */}
       <Animated.View
         style={[
-          styles.logoContainer,
-          { opacity: logoOpacity, transform: [{ scale: logoScale }] },
+          styles.mascotContainer,
+          { opacity: mascotOpacity, transform: [{ scale: mascotScale }] },
         ]}
       >
-        <View style={styles.shieldOuter}>
-          <View style={styles.shieldInner}>
-            <Text style={styles.shieldCheck}>✓</Text>
-          </View>
-        </View>
+        <AnimatedMascot size={110} mood="guarding" interactive={false} />
       </Animated.View>
 
       {/* App Name */}
-      <Animated.Text style={[styles.appName, { opacity: textOpacity }]}>
-        Subly
-      </Animated.Text>
+      <Animated.View style={[styles.nameContainer, { opacity: textOpacity }]}>
+        <Text style={styles.appName}>Subly</Text>
+        <View style={styles.proPill}>
+          <Text style={styles.proPillText}>PROTECT</Text>
+        </View>
+      </Animated.View>
 
       {/* Tagline */}
       <Animated.Text style={[styles.tagline, { opacity: taglineOpacity }]}>
-        Never get charged for a free trial you forgot.
+        Track every trial. Never pay by surprise.
       </Animated.Text>
+
+      {/* Security Tag */}
+      <Animated.View style={[styles.securityBadge, { opacity: badgeOpacity }]}>
+        <Text style={styles.securityText}>🛡️ Automated Trial Guardian</Text>
+      </Animated.View>
     </View>
   );
 };
@@ -96,49 +108,56 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: spacing['3xl'],
   },
-  logoContainer: {
+  mascotContainer: {
     marginBottom: spacing.xl,
   },
-  shieldOuter: {
-    width: 90,
-    height: 100,
-    backgroundColor: colors.primary,
-    borderRadius: 20,
-    borderBottomLeftRadius: 45,
-    borderBottomRightRadius: 45,
+  nameContainer: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.35,
-    shadowRadius: 20,
-    elevation: 16,
-  },
-  shieldInner: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  shieldCheck: {
-    fontSize: 28,
-    color: colors.white,
-    fontWeight: '700',
+    gap: 8,
+    marginBottom: spacing.xs,
   },
   appName: {
-    fontSize: typography.fontSize['3xl'],
+    fontSize: 40,
     fontFamily: typography.fontFamily.bold,
-    color: colors.dark,
-    letterSpacing: -0.5,
-    marginBottom: spacing.sm,
+    color: colors.textPrimary,
+    letterSpacing: -1,
+  },
+  proPill: {
+    backgroundColor: colors.primaryBg,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: colors.primaryLight,
+  },
+  proPillText: {
+    fontSize: 10,
+    fontFamily: typography.fontFamily.bold,
+    color: colors.primary,
+    letterSpacing: 0.8,
   },
   tagline: {
     fontSize: typography.fontSize.base,
     fontFamily: typography.fontFamily.regular,
     color: colors.textMuted,
     textAlign: 'center',
-    lineHeight: typography.fontSize.base * 1.6,
+    lineHeight: typography.fontSize.base * 1.5,
+    marginBottom: spacing['2xl'],
+  },
+  securityBadge: {
+    position: 'absolute',
+    bottom: 48,
+    backgroundColor: '#F8FAFC',
+    paddingHorizontal: spacing.md,
+    paddingVertical: 6,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  securityText: {
+    fontSize: 11,
+    fontFamily: typography.fontFamily.medium,
+    color: colors.gray600,
   },
 });

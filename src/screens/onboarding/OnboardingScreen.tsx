@@ -1,4 +1,4 @@
-// TrialGuard — Onboarding Screen (3 slides)
+// Subly — Onboarding Screen (3 Interactive Mascot-Powered Starter Slides)
 import React, { useRef, useState } from 'react';
 import {
   View,
@@ -13,38 +13,63 @@ import {
 import { ExpoSecureStoreAdapter } from '../../lib/secureStoreAdapter';
 import { colors } from '../../constants/colors';
 import { typography } from '../../constants/typography';
-import { borderRadius, spacing } from '../../constants/spacing';
+import { borderRadius, shadow, spacing } from '../../constants/spacing';
 import { Button } from '../../components/ui/Button';
+import { AnimatedMascot } from '../../components/ui/AnimatedMascot';
 import { analytics } from '../../services/analyticsService';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const ONBOARDING_KEY = 'subly_onboarding_done';
 
-const SLIDES = [
+interface SlideData {
+  id: string;
+  tag: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  featurePill: string;
+  mascotMood: 'happy' | 'alert' | 'celebrating';
+  bubbleText: string;
+  bgGradient: string;
+}
+
+const SLIDES: SlideData[] = [
   {
     id: '1',
-    emoji: '📋',
-    title: 'Track your trials',
+    tag: 'MEET SUBLY',
+    title: 'Track Every Free Trial',
+    subtitle: 'Zero unexpected charges',
     description:
-      'Keep all your free trials and subscriptions in one simple place. Never lose track again.',
-    bg: '#FFF4ED',
+      'Add your streaming, app, and software trials in seconds. Subly monitors your renewals 24/7 so your wallet stays protected.',
+    featurePill: '✨ 1-Tap Popular Presets • 📩 Receipt Auto-Parser',
+    mascotMood: 'happy',
+    bubbleText: "I'm Subly, your trial guardian! 👋",
+    bgGradient: '#FFF5EB',
   },
   {
     id: '2',
-    emoji: '⏰',
-    title: 'Never miss the deadline',
+    tag: 'TIMELY ALERTS',
+    title: 'Never Miss a Deadline',
+    subtitle: 'Nudges before you get billed',
     description:
-      'Get reminders before your free trial turns into a paid subscription. We\'ll nudge you at the right time.',
-    bg: '#FFF8E6',
+      'Receive timely alerts 7 days, 3 days, and 24 hours before your trial converts into a paid renewal.',
+    featurePill: '⏰ Multi-Stage Reminders • 🛡️ Money at Risk Ticker',
+    mascotMood: 'alert',
+    bubbleText: '3 days left! Cancel now? ⏳',
+    bgGradient: '#FEF3C7',
   },
   {
     id: '3',
-    emoji: '🛡️',
-    title: 'Cancel before you pay',
+    tag: 'SAVE THOUSANDS',
+    title: '1-Tap Direct Cancellation',
+    subtitle: 'Direct portal navigation',
     description:
-      'Open the cancellation page with one tap and avoid unwanted charges. You\'re in control.',
-    bg: '#F0FDF4',
+      'Jump straight to the provider’s cancellation portal with one tap. No more hunting through confusing account settings.',
+    featurePill: '💰 Save ₹12,000+ Yearly • 📊 Savings Archive',
+    mascotMood: 'celebrating',
+    bubbleText: 'Saved ₹499 this month! 🎉',
+    bgGradient: '#F0FDF4',
   },
 ];
 
@@ -75,23 +100,43 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
 
   const handleSkip = () => markDone();
 
-  const renderSlide = ({ item }: { item: (typeof SLIDES)[0] }) => (
+  const isLast = activeIndex === SLIDES.length - 1;
+
+  const renderSlide = ({ item }: { item: SlideData }) => (
     <View style={styles.slide}>
-      <View style={[styles.emojiContainer, { backgroundColor: item.bg }]}>
-        <Text style={styles.emoji}>{item.emoji}</Text>
+      {/* Hero Mascot Bubble Card */}
+      <View style={[styles.mascotHeroContainer, { backgroundColor: item.bgGradient }]}>
+        <AnimatedMascot
+          size={120}
+          mood={item.mascotMood}
+          bubbleText={item.bubbleText}
+          interactive={true}
+        />
+        <Text style={styles.tapHintText}>Tap Subly for fun surprises!</Text>
       </View>
-      <Text style={styles.title}>{item.title}</Text>
-      <Text style={styles.description}>{item.description}</Text>
+
+      {/* Slide Text Content */}
+      <View style={styles.textContent}>
+        <View style={styles.tagBadge}>
+          <Text style={styles.tagText}>{item.tag}</Text>
+        </View>
+
+        <Text style={styles.title}>{item.title}</Text>
+        <Text style={styles.subtitle}>{item.subtitle}</Text>
+        <Text style={styles.description}>{item.description}</Text>
+
+        <View style={styles.featurePill}>
+          <Text style={styles.featurePillText}>{item.featurePill}</Text>
+        </View>
+      </View>
     </View>
   );
-
-  const isLast = activeIndex === SLIDES.length - 1;
 
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={colors.white} />
 
-      {/* Skip */}
+      {/* Skip Button */}
       {!isLast && (
         <TouchableOpacity
           style={styles.skipButton}
@@ -103,7 +148,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
         </TouchableOpacity>
       )}
 
-      {/* Slides */}
+      {/* Slides View */}
       <Animated.FlatList
         ref={flatListRef}
         data={SLIDES}
@@ -126,40 +171,45 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
         style={styles.flatList}
       />
 
-      {/* Dot indicators */}
-      <View style={styles.dots}>
-        {SLIDES.map((_, i) => {
-          const dotWidth = scrollX.interpolate({
-            inputRange: [
-              (i - 1) * SCREEN_WIDTH,
-              i * SCREEN_WIDTH,
-              (i + 1) * SCREEN_WIDTH,
-            ],
-            outputRange: [8, 24, 8],
-            extrapolate: 'clamp',
-          });
-          const dotColor = scrollX.interpolate({
-            inputRange: [
-              (i - 1) * SCREEN_WIDTH,
-              i * SCREEN_WIDTH,
-              (i + 1) * SCREEN_WIDTH,
-            ],
-            outputRange: [colors.gray300, colors.primary, colors.gray300],
-            extrapolate: 'clamp',
-          });
-          return (
-            <Animated.View
-              key={i}
-              style={[styles.dot, { width: dotWidth, backgroundColor: dotColor }]}
-            />
-          );
-        })}
-      </View>
+      {/* Bottom Controls Bar */}
+      <View style={styles.bottomBar}>
+        {/* Animated Dot Indicators */}
+        <View style={styles.dotsContainer}>
+          {SLIDES.map((_, i) => {
+            const dotWidth = scrollX.interpolate({
+              inputRange: [
+                (i - 1) * SCREEN_WIDTH,
+                i * SCREEN_WIDTH,
+                (i + 1) * SCREEN_WIDTH,
+              ],
+              outputRange: [8, 28, 8],
+              extrapolate: 'clamp',
+            });
+            const dotColor = scrollX.interpolate({
+              inputRange: [
+                (i - 1) * SCREEN_WIDTH,
+                i * SCREEN_WIDTH,
+                (i + 1) * SCREEN_WIDTH,
+              ],
+              outputRange: [colors.gray300, colors.primary, colors.gray300],
+              extrapolate: 'clamp',
+            });
 
-      {/* CTA */}
-      <View style={styles.ctaContainer}>
+            return (
+              <Animated.View
+                key={i}
+                style={[
+                  styles.dot,
+                  { width: dotWidth, backgroundColor: dotColor },
+                ]}
+              />
+            );
+          })}
+        </View>
+
+        {/* CTA Button */}
         <Button
-          title={isLast ? 'Get Started' : 'Next'}
+          title={isLast ? 'Get Started 🚀' : 'Continue →'}
           onPress={handleNext}
           fullWidth
           size="lg"
@@ -185,16 +235,18 @@ const styles = StyleSheet.create({
   },
   skipButton: {
     position: 'absolute',
-    top: 56,
+    top: 52,
     right: spacing.xl,
     zIndex: 10,
     paddingVertical: spacing.xs,
-    paddingHorizontal: spacing.sm,
+    paddingHorizontal: spacing.md,
+    backgroundColor: 'rgba(241, 245, 249, 0.8)',
+    borderRadius: borderRadius.full,
   },
   skipText: {
-    fontSize: typography.fontSize.base,
-    fontFamily: typography.fontFamily.medium,
-    color: colors.textMuted,
+    fontSize: typography.fontSize.xs,
+    fontFamily: typography.fontFamily.semiBold,
+    color: colors.gray600,
   },
   flatList: {
     flex: 1,
@@ -202,50 +254,94 @@ const styles = StyleSheet.create({
   slide: {
     width: SCREEN_WIDTH,
     flex: 1,
+    paddingHorizontal: spacing.xl,
+    paddingTop: 80,
+    alignItems: 'center',
+  },
+  mascotHeroContainer: {
+    width: '100%',
+    height: 240,
+    borderRadius: borderRadius['2xl'],
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: spacing['3xl'],
-    paddingTop: spacing['4xl'],
+    paddingTop: spacing.lg,
+    marginBottom: spacing.xl,
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.04)',
+    ...shadow.sm,
   },
-  emojiContainer: {
-    width: 130,
-    height: 130,
-    borderRadius: 40,
+  tapHintText: {
+    fontSize: 10,
+    fontFamily: typography.fontFamily.medium,
+    color: colors.textMuted,
+    marginTop: spacing.md,
+  },
+  textContent: {
     alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: spacing['2xl'],
+    width: '100%',
   },
-  emoji: {
-    fontSize: 60,
+  tagBadge: {
+    backgroundColor: colors.primaryBg,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 4,
+    borderRadius: borderRadius.full,
+    marginBottom: spacing.sm,
+  },
+  tagText: {
+    fontSize: 10,
+    fontFamily: typography.fontFamily.bold,
+    color: colors.primary,
+    letterSpacing: 0.8,
   },
   title: {
-    fontSize: typography.fontSize['3xl'],
+    fontSize: typography.fontSize['2xl'],
     fontFamily: typography.fontFamily.bold,
     color: colors.textPrimary,
     textAlign: 'center',
-    marginBottom: spacing.base,
     letterSpacing: -0.5,
   },
+  subtitle: {
+    fontSize: typography.fontSize.sm,
+    fontFamily: typography.fontFamily.medium,
+    color: colors.primary,
+    textAlign: 'center',
+    marginTop: 2,
+    marginBottom: spacing.sm,
+  },
   description: {
-    fontSize: typography.fontSize.md,
+    fontSize: typography.fontSize.sm,
     fontFamily: typography.fontFamily.regular,
     color: colors.textSecondary,
     textAlign: 'center',
-    lineHeight: typography.fontSize.md * 1.65,
+    lineHeight: 22,
+    marginBottom: spacing.md,
   },
-  dots: {
+  featurePill: {
+    backgroundColor: '#F8FAFC',
+    paddingHorizontal: spacing.md,
+    paddingVertical: 6,
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  featurePillText: {
+    fontSize: 11,
+    fontFamily: typography.fontFamily.medium,
+    color: colors.gray700,
+  },
+  bottomBar: {
+    paddingHorizontal: spacing.xl,
+    paddingBottom: spacing['3xl'],
+  },
+  dotsContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: spacing.xl,
-    gap: spacing.xs,
+    marginBottom: spacing.lg,
+    gap: 6,
   },
   dot: {
-    height: 8,
+    height: 7,
     borderRadius: borderRadius.full,
-  },
-  ctaContainer: {
-    paddingHorizontal: spacing.xl,
-    paddingBottom: spacing['3xl'],
   },
 });

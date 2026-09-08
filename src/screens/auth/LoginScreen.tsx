@@ -1,4 +1,4 @@
-// TrialGuard — Login Screen
+// Subly — Login Screen with Interactive Mascot & Modern UI
 import React, { useState } from 'react';
 import {
   View,
@@ -11,12 +11,14 @@ import {
   StatusBar,
   Alert,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../hooks/useAuth';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { colors } from '../../constants/colors';
 import { typography } from '../../constants/typography';
-import { borderRadius, spacing } from '../../constants/spacing';
+import { borderRadius, shadow, spacing } from '../../constants/spacing';
+import { AnimatedMascot } from '../../components/ui/AnimatedMascot';
 
 interface LoginScreenProps {
   onNavigateSignUp: () => void;
@@ -46,7 +48,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
     if (!validate()) return;
     try {
       await signIn(email, password);
-    } catch (e: any) {
+    } catch {
       // error handled in useAuth state
     }
   };
@@ -71,27 +73,29 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        {/* Shield Logo */}
-        <View style={styles.logoContainer}>
-          <View style={styles.shield}>
-            <Text style={styles.shieldCheck}>✓</Text>
-          </View>
+        {/* Animated Mascot Header */}
+        <View style={styles.mascotSection}>
+          <AnimatedMascot
+            size={90}
+            mood="happy"
+            bubbleText="Welcome back! 👋"
+            interactive={true}
+          />
           <Text style={styles.appName}>Subly</Text>
-          <Text style={styles.subtitle}>
-            Sign in to protect your wallet
-          </Text>
+          <Text style={styles.subtitle}>Sign in to manage your trials</Text>
         </View>
 
-        {/* Form */}
-        <View style={styles.form}>
+        {/* Card Form */}
+        <View style={styles.card}>
           {error && (
             <View style={styles.errorBanner}>
+              <Ionicons name="alert-circle" size={18} color={colors.danger} />
               <Text style={styles.errorText}>{error}</Text>
             </View>
           )}
 
           <Input
-            label="Email"
+            label="EMAIL ADDRESS"
             value={email}
             onChangeText={(t) => { setEmail(t); clearError(); }}
             placeholder="you@example.com"
@@ -104,7 +108,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
           />
 
           <Input
-            label="Password"
+            label="PASSWORD"
             value={password}
             onChangeText={(t) => { setPassword(t); clearError(); }}
             placeholder="••••••••"
@@ -132,14 +136,14 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
             style={styles.signInBtn}
           />
 
-          {/* Divider */}
-          <View style={styles.dividerRow}>
-            <View style={styles.divider} />
-            <Text style={styles.dividerText}>or continue with</Text>
-            <View style={styles.divider} />
+          {/* Social Divider */}
+          <View style={styles.divider}>
+            <View style={styles.dividerLine} />
+            <Text style={styles.dividerText}>OR</Text>
+            <View style={styles.dividerLine} />
           </View>
 
-          {/* Google Sign-In */}
+          {/* Google Sign In */}
           <TouchableOpacity
             style={styles.googleBtn}
             onPress={handleGoogleSignIn}
@@ -147,17 +151,23 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
             accessibilityRole="button"
             accessibilityLabel="Sign in with Google"
           >
-            <Text style={styles.googleIcon}>G</Text>
+            <Ionicons name="logo-google" size={18} color="#EA4335" />
             <Text style={styles.googleBtnText}>Continue with Google</Text>
           </TouchableOpacity>
         </View>
 
-        {/* Sign Up link */}
+        {/* Footer Navigation */}
         <View style={styles.footer}>
           <Text style={styles.footerText}>Don't have an account? </Text>
           <TouchableOpacity onPress={onNavigateSignUp} accessibilityRole="button">
-            <Text style={styles.footerLink}>Create Account</Text>
+            <Text style={styles.signUpLink}>Create Account</Text>
           </TouchableOpacity>
+        </View>
+
+        {/* Security Badge */}
+        <View style={styles.securityRow}>
+          <Ionicons name="lock-closed" size={13} color={colors.gray500} />
+          <Text style={styles.securityText}>Bank-grade encrypted & private</Text>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -167,59 +177,48 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
 const styles = StyleSheet.create({
   flex: { flex: 1, backgroundColor: colors.white },
   container: {
-    flexGrow: 1,
-    padding: spacing.xl,
-    paddingTop: spacing['4xl'],
-  },
-  logoContainer: {
-    alignItems: 'center',
-    marginBottom: spacing['3xl'],
-  },
-  shield: {
-    width: 64,
-    height: 72,
-    backgroundColor: colors.primary,
-    borderRadius: 14,
-    borderBottomLeftRadius: 32,
-    borderBottomRightRadius: 32,
-    alignItems: 'center',
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.xl,
+    paddingBottom: spacing['3xl'],
+    minHeight: '100%',
     justifyContent: 'center',
-    marginBottom: spacing.base,
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 8,
   },
-  shieldCheck: {
-    fontSize: 28,
-    color: colors.white,
-    fontWeight: '800',
+  mascotSection: {
+    alignItems: 'center',
+    marginBottom: spacing.lg,
   },
   appName: {
-    fontSize: typography.fontSize['2xl'],
+    fontSize: typography.fontSize['3xl'],
     fontFamily: typography.fontFamily.bold,
     color: colors.textPrimary,
     letterSpacing: -0.5,
-    marginBottom: spacing.xs,
+    marginTop: spacing.sm,
   },
   subtitle: {
-    fontSize: typography.fontSize.base,
+    fontSize: typography.fontSize.sm,
     fontFamily: typography.fontFamily.regular,
     color: colors.textMuted,
+    marginTop: 2,
   },
-  form: {
-    flex: 1,
+  card: {
+    backgroundColor: colors.white,
+    borderRadius: borderRadius['2xl'],
+    padding: spacing.lg,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    ...shadow.sm,
   },
   errorBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: colors.dangerBg,
     borderRadius: borderRadius.md,
     padding: spacing.md,
     marginBottom: spacing.base,
-    borderWidth: 1,
-    borderColor: colors.dangerLight,
+    gap: spacing.xs,
   },
   errorText: {
+    flex: 1,
     fontSize: typography.fontSize.sm,
     fontFamily: typography.fontFamily.medium,
     color: colors.danger,
@@ -227,68 +226,75 @@ const styles = StyleSheet.create({
   forgotLink: {
     alignSelf: 'flex-end',
     marginBottom: spacing.lg,
-    marginTop: -spacing.sm,
+    marginTop: -spacing.xs,
   },
   forgotText: {
-    fontSize: typography.fontSize.sm,
-    fontFamily: typography.fontFamily.medium,
+    fontSize: typography.fontSize.xs,
+    fontFamily: typography.fontFamily.semiBold,
     color: colors.primary,
   },
   signInBtn: {
-    marginBottom: spacing.xl,
-  },
-  dividerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
     marginBottom: spacing.base,
   },
   divider: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: spacing.md,
+  },
+  dividerLine: {
     flex: 1,
     height: 1,
-    backgroundColor: colors.border,
+    backgroundColor: '#F1F5F9',
   },
   dividerText: {
-    fontSize: typography.fontSize.sm,
-    fontFamily: typography.fontFamily.regular,
-    color: colors.textMuted,
-    marginHorizontal: spacing.md,
+    fontSize: 10,
+    fontFamily: typography.fontFamily.semiBold,
+    color: colors.gray400,
+    paddingHorizontal: spacing.md,
+    letterSpacing: 0.5,
   },
   googleBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1.5,
-    borderColor: colors.border,
-    borderRadius: borderRadius.lg,
-    paddingVertical: spacing.md,
     backgroundColor: colors.white,
+    borderWidth: 1.5,
+    borderColor: '#E2E8F0',
+    borderRadius: borderRadius.lg,
+    height: 48,
     gap: spacing.sm,
   },
-  googleIcon: {
-    fontSize: typography.fontSize.lg,
-    fontFamily: typography.fontFamily.bold,
-    color: '#4285F4',
-  },
   googleBtnText: {
-    fontSize: typography.fontSize.base,
+    fontSize: typography.fontSize.sm,
     fontFamily: typography.fontFamily.semiBold,
-    color: colors.textPrimary,
+    color: colors.gray800,
   },
   footer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingTop: spacing.xl,
-    paddingBottom: spacing.sm,
+    marginTop: spacing.xl,
   },
   footerText: {
-    fontSize: typography.fontSize.base,
+    fontSize: typography.fontSize.sm,
     fontFamily: typography.fontFamily.regular,
     color: colors.textMuted,
   },
-  footerLink: {
-    fontSize: typography.fontSize.base,
-    fontFamily: typography.fontFamily.semiBold,
+  signUpLink: {
+    fontSize: typography.fontSize.sm,
+    fontFamily: typography.fontFamily.bold,
     color: colors.primary,
+  },
+  securityRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: spacing.lg,
+    gap: 4,
+  },
+  securityText: {
+    fontSize: 11,
+    fontFamily: typography.fontFamily.regular,
+    color: colors.gray500,
   },
 });

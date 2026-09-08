@@ -1,4 +1,4 @@
-// TrialGuard — Sign Up Screen
+// Subly — Sign Up Screen with Interactive Mascot & Modern UI
 import React, { useState } from 'react';
 import {
   View,
@@ -11,12 +11,14 @@ import {
   StatusBar,
   Alert,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../hooks/useAuth';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { colors } from '../../constants/colors';
 import { typography } from '../../constants/typography';
-import { borderRadius, spacing } from '../../constants/spacing';
+import { borderRadius, shadow, spacing } from '../../constants/spacing';
+import { AnimatedMascot } from '../../components/ui/AnimatedMascot';
 
 interface SignUpScreenProps {
   onNavigateLogin: () => void;
@@ -35,11 +37,11 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({ onNavigateLogin }) =
 
   const validate = (): boolean => {
     const errs: typeof formErrors = {};
-    if (!name.trim()) errs.name = 'Name is required.';
-    if (!email.trim()) errs.email = 'Email is required.';
+    if (!name.trim()) errs.name = 'Full name is required.';
+    if (!email.trim()) errs.email = 'Email address is required.';
     else if (!/\S+@\S+\.\S+/.test(email)) errs.email = 'Enter a valid email.';
     if (!password) errs.password = 'Password is required.';
-    else if (password.length < 6) errs.password = 'Password must be at least 6 characters.';
+    else if (password.length < 6) errs.password = 'Must be at least 6 characters.';
     setFormErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -50,12 +52,12 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({ onNavigateLogin }) =
     try {
       await signUp(name, email, password);
       Alert.alert(
-        'Check your inbox',
-        'We sent you a confirmation email. Please verify your email to log in.',
-        [{ text: 'OK', onPress: onNavigateLogin }]
+        'Check your inbox 📩',
+        'We sent you a confirmation link. Please verify your email to access Subly.',
+        [{ text: 'Sign In Now', onPress: onNavigateLogin }]
       );
     } catch {
-      // error handled in useAuth state
+      // handled in useAuth
     }
   };
 
@@ -64,7 +66,7 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({ onNavigateLogin }) =
     try {
       await signInWithGoogle();
     } catch {
-      Alert.alert('Error', 'Google sign in failed. Please try again.');
+      Alert.alert('Error', 'Google sign up failed. Please try again.');
     }
   };
 
@@ -79,30 +81,32 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({ onNavigateLogin }) =
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        {/* Header */}
-        <View style={styles.header}>
-          <View style={styles.shield}>
-            <Text style={styles.shieldCheck}>✓</Text>
-          </View>
-          <Text style={styles.title}>Create your account</Text>
-          <Text style={styles.subtitle}>
-            Start protecting your wallet today
-          </Text>
+        {/* Animated Mascot Header */}
+        <View style={styles.mascotSection}>
+          <AnimatedMascot
+            size={90}
+            mood="guarding"
+            bubbleText="Let's protect your wallet! 🛡️"
+            interactive={true}
+          />
+          <Text style={styles.appName}>Create Your Account</Text>
+          <Text style={styles.subtitle}>Join thousands saving with Subly</Text>
         </View>
 
-        {/* Form */}
-        <View style={styles.form}>
+        {/* Card Form */}
+        <View style={styles.card}>
           {error && (
             <View style={styles.errorBanner}>
+              <Ionicons name="alert-circle" size={18} color={colors.danger} />
               <Text style={styles.errorText}>{error}</Text>
             </View>
           )}
 
           <Input
-            label="Name"
+            label="YOUR NAME"
             value={name}
             onChangeText={(t) => { setName(t); clearError(); }}
-            placeholder="Your full name"
+            placeholder="Mayank Bohara"
             autoCapitalize="words"
             error={formErrors.name}
             returnKeyType="next"
@@ -110,7 +114,7 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({ onNavigateLogin }) =
           />
 
           <Input
-            label="Email"
+            label="EMAIL ADDRESS"
             value={email}
             onChangeText={(t) => { setEmail(t); clearError(); }}
             placeholder="you@example.com"
@@ -123,10 +127,10 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({ onNavigateLogin }) =
           />
 
           <Input
-            label="Password"
+            label="PASSWORD"
             value={password}
             onChangeText={(t) => { setPassword(t); clearError(); }}
-            placeholder="Min 6 characters"
+            placeholder="Minimum 6 characters"
             secureTextEntry
             error={formErrors.password}
             returnKeyType="done"
@@ -135,7 +139,7 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({ onNavigateLogin }) =
           />
 
           <Button
-            title="Create Account"
+            title="Create Free Account"
             onPress={handleSignUp}
             loading={loading}
             fullWidth
@@ -143,14 +147,14 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({ onNavigateLogin }) =
             style={styles.signUpBtn}
           />
 
-          {/* Divider */}
-          <View style={styles.dividerRow}>
-            <View style={styles.divider} />
-            <Text style={styles.dividerText}>or continue with</Text>
-            <View style={styles.divider} />
+          {/* Social Divider */}
+          <View style={styles.divider}>
+            <View style={styles.dividerLine} />
+            <Text style={styles.dividerText}>OR</Text>
+            <View style={styles.dividerLine} />
           </View>
 
-          {/* Google */}
+          {/* Google Sign In */}
           <TouchableOpacity
             style={styles.googleBtn}
             onPress={handleGoogleSignUp}
@@ -158,16 +162,16 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({ onNavigateLogin }) =
             accessibilityRole="button"
             accessibilityLabel="Sign up with Google"
           >
-            <Text style={styles.googleIcon}>G</Text>
-            <Text style={styles.googleBtnText}>Continue with Google</Text>
+            <Ionicons name="logo-google" size={18} color="#EA4335" />
+            <Text style={styles.googleBtnText}>Sign up with Google</Text>
           </TouchableOpacity>
         </View>
 
-        {/* Sign In link */}
+        {/* Footer Navigation */}
         <View style={styles.footer}>
           <Text style={styles.footerText}>Already have an account? </Text>
           <TouchableOpacity onPress={onNavigateLogin} accessibilityRole="button">
-            <Text style={styles.footerLink}>Sign In</Text>
+            <Text style={styles.loginLink}>Sign In</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -178,119 +182,103 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({ onNavigateLogin }) =
 const styles = StyleSheet.create({
   flex: { flex: 1, backgroundColor: colors.white },
   container: {
-    flexGrow: 1,
-    padding: spacing.xl,
-    paddingTop: spacing['4xl'],
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: spacing['2xl'],
-  },
-  shield: {
-    width: 64,
-    height: 72,
-    backgroundColor: colors.primary,
-    borderRadius: 14,
-    borderBottomLeftRadius: 32,
-    borderBottomRightRadius: 32,
-    alignItems: 'center',
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.xl,
+    paddingBottom: spacing['3xl'],
+    minHeight: '100%',
     justifyContent: 'center',
-    marginBottom: spacing.base,
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 8,
   },
-  shieldCheck: {
-    fontSize: 28,
-    color: colors.white,
-    fontWeight: '800',
+  mascotSection: {
+    alignItems: 'center',
+    marginBottom: spacing.lg,
   },
-  title: {
+  appName: {
     fontSize: typography.fontSize['2xl'],
     fontFamily: typography.fontFamily.bold,
     color: colors.textPrimary,
     letterSpacing: -0.5,
-    marginBottom: spacing.xs,
+    marginTop: spacing.sm,
   },
   subtitle: {
-    fontSize: typography.fontSize.base,
+    fontSize: typography.fontSize.sm,
     fontFamily: typography.fontFamily.regular,
     color: colors.textMuted,
+    marginTop: 2,
   },
-  form: {
-    flex: 1,
+  card: {
+    backgroundColor: colors.white,
+    borderRadius: borderRadius['2xl'],
+    padding: spacing.lg,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    ...shadow.sm,
   },
   errorBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: colors.dangerBg,
     borderRadius: borderRadius.md,
     padding: spacing.md,
     marginBottom: spacing.base,
-    borderWidth: 1,
-    borderColor: colors.dangerLight,
+    gap: spacing.xs,
   },
   errorText: {
+    flex: 1,
     fontSize: typography.fontSize.sm,
     fontFamily: typography.fontFamily.medium,
     color: colors.danger,
   },
   signUpBtn: {
-    marginTop: spacing.sm,
-    marginBottom: spacing.xl,
-  },
-  dividerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    marginTop: spacing.xs,
     marginBottom: spacing.base,
   },
   divider: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: spacing.md,
+  },
+  dividerLine: {
     flex: 1,
     height: 1,
-    backgroundColor: colors.border,
+    backgroundColor: '#F1F5F9',
   },
   dividerText: {
-    fontSize: typography.fontSize.sm,
-    fontFamily: typography.fontFamily.regular,
-    color: colors.textMuted,
-    marginHorizontal: spacing.md,
+    fontSize: 10,
+    fontFamily: typography.fontFamily.semiBold,
+    color: colors.gray400,
+    paddingHorizontal: spacing.md,
+    letterSpacing: 0.5,
   },
   googleBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1.5,
-    borderColor: colors.border,
-    borderRadius: borderRadius.lg,
-    paddingVertical: spacing.md,
     backgroundColor: colors.white,
+    borderWidth: 1.5,
+    borderColor: '#E2E8F0',
+    borderRadius: borderRadius.lg,
+    height: 48,
     gap: spacing.sm,
   },
-  googleIcon: {
-    fontSize: typography.fontSize.lg,
-    fontFamily: typography.fontFamily.bold,
-    color: '#4285F4',
-  },
   googleBtnText: {
-    fontSize: typography.fontSize.base,
+    fontSize: typography.fontSize.sm,
     fontFamily: typography.fontFamily.semiBold,
-    color: colors.textPrimary,
+    color: colors.gray800,
   },
   footer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingTop: spacing.xl,
-    paddingBottom: spacing.sm,
+    marginTop: spacing.xl,
   },
   footerText: {
-    fontSize: typography.fontSize.base,
+    fontSize: typography.fontSize.sm,
     fontFamily: typography.fontFamily.regular,
     color: colors.textMuted,
   },
-  footerLink: {
-    fontSize: typography.fontSize.base,
-    fontFamily: typography.fontFamily.semiBold,
+  loginLink: {
+    fontSize: typography.fontSize.sm,
+    fontFamily: typography.fontFamily.bold,
     color: colors.primary,
   },
 });

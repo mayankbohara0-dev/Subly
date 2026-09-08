@@ -1,4 +1,4 @@
-// TrialGuard — Forgot Password Screen
+// Subly — Forgot Password Screen with Animated Mascot
 import React, { useState } from 'react';
 import {
   View,
@@ -10,12 +10,14 @@ import {
   StatusBar,
   Alert,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../hooks/useAuth';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { colors } from '../../constants/colors';
 import { typography } from '../../constants/typography';
-import { borderRadius, spacing } from '../../constants/spacing';
+import { borderRadius, shadow, spacing } from '../../constants/spacing';
+import { AnimatedMascot } from '../../components/ui/AnimatedMascot';
 
 interface ForgotPasswordScreenProps {
   onNavigateBack: () => void;
@@ -50,20 +52,29 @@ export const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = ({
 
   if (sent) {
     return (
-      <View style={styles.sentContainer}>
-        <Text style={styles.sentIcon}>📧</Text>
-        <Text style={styles.sentTitle}>Check your inbox</Text>
-        <Text style={styles.sentDesc}>
-          We've sent a password reset link to{' '}
-          <Text style={styles.emailHighlight}>{email}</Text>. Follow the link
-          to reset your password.
-        </Text>
-        <Button
-          title="Back to Sign In"
-          onPress={onNavigateBack}
-          fullWidth
-          style={styles.backBtn}
-        />
+      <View style={styles.container}>
+        <StatusBar barStyle="dark-content" backgroundColor={colors.white} />
+        <View style={styles.sentContent}>
+          <AnimatedMascot
+            size={100}
+            mood="celebrating"
+            bubbleText="Email sent! Check inbox 📩"
+            interactive={true}
+          />
+          <Text style={styles.sentTitle}>Check Your Inbox</Text>
+          <Text style={styles.sentDesc}>
+            We've sent password reset instructions to{' '}
+            <Text style={styles.emailHighlight}>{email}</Text>. Follow the link to create a new password.
+          </Text>
+
+          <Button
+            title="Back to Sign In"
+            onPress={onNavigateBack}
+            fullWidth
+            size="lg"
+            style={styles.backBtn}
+          />
+        </View>
       </View>
     );
   }
@@ -75,46 +86,56 @@ export const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = ({
     >
       <StatusBar barStyle="dark-content" backgroundColor={colors.white} />
       <View style={styles.container}>
+        {/* Back Link */}
         <TouchableOpacity
           onPress={onNavigateBack}
           style={styles.backLink}
           accessibilityRole="button"
           accessibilityLabel="Go back"
         >
-          <Text style={styles.backLinkText}>← Back</Text>
+          <Ionicons name="arrow-back" size={20} color={colors.textPrimary} />
+          <Text style={styles.backLinkText}>Back</Text>
         </TouchableOpacity>
 
-        <View style={styles.header}>
-          <Text style={styles.lockEmoji}>🔑</Text>
-          <Text style={styles.title}>Reset your password</Text>
+        {/* Mascot Header */}
+        <View style={styles.mascotSection}>
+          <AnimatedMascot
+            size={90}
+            mood="happy"
+            bubbleText="Forgot your key? 🔑"
+            interactive={true}
+          />
+          <Text style={styles.title}>Reset Password</Text>
           <Text style={styles.subtitle}>
-            Enter your email address and we'll send you a link to reset your
-            password.
+            Enter your email to receive recovery instructions.
           </Text>
         </View>
 
-        <Input
-          label="Email"
-          value={email}
-          onChangeText={(t) => { setEmail(t); setEmailError(undefined); }}
-          placeholder="you@example.com"
-          keyboardType="email-address"
-          autoCapitalize="none"
-          autoCorrect={false}
-          error={emailError}
-          returnKeyType="done"
-          onSubmitEditing={handleReset}
-          accessibilityLabel="Email address"
-        />
+        {/* Input Card */}
+        <View style={styles.card}>
+          <Input
+            label="ACCOUNT EMAIL"
+            value={email}
+            onChangeText={(t) => { setEmail(t); setEmailError(undefined); }}
+            placeholder="you@example.com"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            autoCorrect={false}
+            error={emailError}
+            returnKeyType="done"
+            onSubmitEditing={handleReset}
+            accessibilityLabel="Account email"
+          />
 
-        <Button
-          title="Send Reset Link"
-          onPress={handleReset}
-          loading={loading}
-          fullWidth
-          size="lg"
-          style={styles.resetBtn}
-        />
+          <Button
+            title="Send Reset Instructions"
+            onPress={handleReset}
+            loading={loading}
+            fullWidth
+            size="lg"
+            style={styles.resetBtn}
+          />
+        </View>
       </View>
     </KeyboardAvoidingView>
   );
@@ -124,70 +145,75 @@ const styles = StyleSheet.create({
   flex: { flex: 1, backgroundColor: colors.white },
   container: {
     flex: 1,
-    padding: spacing.xl,
-    paddingTop: spacing['2xl'],
+    paddingHorizontal: spacing.xl,
+    paddingTop: 60,
+    justifyContent: 'center',
   },
   backLink: {
-    marginBottom: spacing['2xl'],
+    position: 'absolute',
+    top: 50,
+    left: spacing.xl,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingVertical: spacing.xs,
   },
   backLinkText: {
-    fontSize: typography.fontSize.base,
-    fontFamily: typography.fontFamily.medium,
-    color: colors.primary,
+    fontSize: typography.fontSize.sm,
+    fontFamily: typography.fontFamily.semiBold,
+    color: colors.textPrimary,
   },
-  header: {
-    marginBottom: spacing['2xl'],
-  },
-  lockEmoji: {
-    fontSize: 44,
-    marginBottom: spacing.base,
+  mascotSection: {
+    alignItems: 'center',
+    marginBottom: spacing.xl,
   },
   title: {
     fontSize: typography.fontSize['2xl'],
     fontFamily: typography.fontFamily.bold,
     color: colors.textPrimary,
-    marginBottom: spacing.sm,
-    letterSpacing: -0.5,
+    marginTop: spacing.md,
+    letterSpacing: -0.4,
   },
   subtitle: {
-    fontSize: typography.fontSize.base,
+    fontSize: typography.fontSize.sm,
     fontFamily: typography.fontFamily.regular,
-    color: colors.textSecondary,
-    lineHeight: typography.fontSize.base * 1.6,
+    color: colors.textMuted,
+    textAlign: 'center',
+    marginTop: 4,
+    paddingHorizontal: spacing.base,
+  },
+  card: {
+    backgroundColor: colors.white,
+    borderRadius: borderRadius['2xl'],
+    padding: spacing.lg,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    ...shadow.sm,
   },
   resetBtn: {
     marginTop: spacing.sm,
   },
-
-  // Sent state
-  sentContainer: {
-    flex: 1,
-    backgroundColor: colors.white,
-    padding: spacing.xl,
+  sentContent: {
     alignItems: 'center',
-    justifyContent: 'center',
-  },
-  sentIcon: {
-    fontSize: 64,
-    marginBottom: spacing.xl,
+    paddingHorizontal: spacing.base,
   },
   sentTitle: {
     fontSize: typography.fontSize['2xl'],
     fontFamily: typography.fontFamily.bold,
     color: colors.textPrimary,
-    marginBottom: spacing.base,
-    letterSpacing: -0.5,
+    marginTop: spacing.lg,
+    marginBottom: spacing.xs,
   },
   sentDesc: {
-    fontSize: typography.fontSize.base,
+    fontSize: typography.fontSize.sm,
     fontFamily: typography.fontFamily.regular,
     color: colors.textSecondary,
     textAlign: 'center',
-    lineHeight: typography.fontSize.base * 1.6,
-    marginBottom: spacing['2xl'],
+    lineHeight: 22,
+    marginBottom: spacing.xl,
   },
   emailHighlight: {
-    fontFamily: typography.fontFamily.semiBold,
+    fontFamily: typography.fontFamily.bold,
     color: colors.textPrimary,
   },
   backBtn: {
