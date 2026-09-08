@@ -1,22 +1,25 @@
 {
   "expo": {
-    "name": "Trial",
-    "slug": "Trial",
+    "name": "Subly",
+    "slug": "subly",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "scheme": "subly",
+    "splash": {
+      "backgroundColor": "#FFFFFF"
+    },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": false,
+      "bundleIdentifier": "com.subly.app"
     },
     "android": {
+      "package": "com.subly.app",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
-      },
-      "predictiveBackGestureEnabled": false
+        "backgroundColor": "#FF6B00"
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"
