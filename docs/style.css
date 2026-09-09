@@ -237,6 +237,28 @@ body {
   flex-wrap: wrap;
 }
 
+/* ── Product Hunt Badge ─────────────────────────────────── */
+.ph-badge-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 28px;
+}
+
+.ph-badge-row a {
+  display: inline-flex;
+  transition: var(--transition);
+}
+
+.ph-badge-row a:hover {
+  transform: translateY(-3px);
+  filter: drop-shadow(0 6px 18px rgba(218, 89, 48, 0.45));
+}
+
+.ph-badge-row img {
+  display: block;
+  border-radius: 8px;
+}
+
 /* ── Buttons ───────────────────────────────────────────── */
 .btn {
   display: inline-flex;
